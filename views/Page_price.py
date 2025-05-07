@@ -70,43 +70,6 @@ with st.sidebar:
         # value=False
     )
 
-    if TOGGLE_THEME != st.session_state["dark_mode"]:
-        if TOGGLE_THEME:
-            st._config.set_option(f"theme.base", "dark")
-        else:
-            st._config.set_option(f"theme.base", "light")
-        st.session_state["dark_mode"] = TOGGLE_THEME
-        st.rerun()
-
-    PORTFOLIOS = {
-        "NIFTY 50": "^NSEI",  # Add NIFTY 50
-        "SENSEX": "^BSESN",  # Add SENSEX
-        "Magnificent 7": "MSFT, GOOGL, AAPL, AMZN, META, TSLA, NVDA",
-        "Top 5 Shanghai": "600519.SS, 601398.SS, 600036.SS, 601318.SS, 601857.SS",
-        "Top 5 Tokyo": "7203.T, 6758.T, 8306.T, 6861.T, 7974.T",
-        "Top 5 Hong Kong": "0700.HK, 9988.HK, 1299.HK, 3690.HK, 0939.HK",
-        "Top 5 Euronext": "ASML.AS, MC.PA, OR.PA, RMS.PA, TTE.PA",
-        "Top 5 London": "AZN.L, HSBA.L, SHEL.L, ULVR.L, DGE.L",
-        "Top 5 Bombay": "RELIANCE.NS, TCS.NS, HDFCBANK.NS, INFY.NS, ICICIBANK.NS",
-        "Top 5 Toronto": "RY.TO, TD.TO, CNR.TO, ENB.TO, SHOP.TO",
-        "Top 5 Frankfurt": "SAP.DE, SIE.DE, VOW3.DE, ALV.DE, DTE.DE",
-        "Top 5 Australia": "BHP.AX, CBA.AX, CSL.AX, NAB.AX, WBC.AX",
-        "Top 5 Singapore": "D05.SI, O39.SI, U11.SI, Z74.SI, 9CI.SI",
-        "Top 5 São Paulo": "VALE3.SA, PETR4.SA, BBDC4.SA, ABEV3.SA, BBAS3.SA",
-        "Top 5 Buenos Aires": "YPFD.BA, GGAL.BA, BMA.BA, BBAR.BA, PAMP.BA",
-        "Oil&Gas": "CVX, XOM, SHEL, YPFD.BA, VIST, PAMP.BA",
-        "Vehicles": "TSLA, F, GM, VOW3.DE, 7203.T, 1211.HK, RACE",
-    }
-
-    PORTFOLIO = st.selectbox(
-        label="Portfolios",
-        options=[None] + list(PORTFOLIOS.keys()),
-        index=0,
-        help="Choose from one of the predefined portfolios. Leave it as None to customize it",
-    )
-
-    if PORTFOLIO is not None:
-        st.session_state["tickers"] = PORTFOLIOS[PORTFOLIO]
 
     TICKERS = st.text_input(
         label="Securities:",
@@ -245,7 +208,6 @@ with st.sidebar:
 # --- MAINPAGE ---
 st.title("Stock Market Dashboard")
 
-
 def display_indices():
     """Displays the performance of key global indices."""
     indices = ["^GSPC", "^DJI", "^IXIC", "^N225", "^GDAXI", "^NSEI"]  # Add NSEI
@@ -256,43 +218,34 @@ def display_indices():
         "Nikkei 225",
         "DAX",
         "NIFTY 50",
-    ]  # Add NIFTY 50 name
+    ]
+
     try:
-        indices_data = yf.download(indices, period="1d")
+        indices_data = yf.download(indices, period="2d")  # Need 2 days to get change
         if not indices_data.empty:
-            st.subheader("Major Global Indices")
+            st.subheader("📊 Major Global Indices")
             latest_prices = indices_data["Close"].iloc[-1]
             previous_closes = indices_data["Close"].iloc[-2]
             changes = latest_prices - previous_closes
             percent_changes = (changes / previous_closes) * 100
+
             index_data = []
             for i, index in enumerate(indices):
                 index_data.append(
                     {
                         "Index": indices_names[i],
-                        "Last Traded Price": latest_prices[index],
-                        "Change": changes[index],
-                        "Change %": percent_changes[index],
+                        "Price": f"{latest_prices[index]:.2f}",
+                        "Change": f"{changes[index]:+.2f}",
+                        "Change (%)": f"{percent_changes[index]:+.2f}%",
                     }
                 )
-            df = pd.DataFrame(index_data)
-            df = df.set_index("Index")
-            st.dataframe(
-                df.style.format(
-                    {
-                        "Last Traded Price": "{:.2f}",
-                        "Change": "{:.2f}",
-                        "Change %": "{:.2f}%",
-                    }
-                ),
-                use_container_width=True,
-            )
+
+            df_indices = pd.DataFrame(index_data)
+            st.dataframe(df_indices, use_container_width=True)
         else:
-            st.warning("Could not retrieve index data.")
+            st.warning("No index data retrieved.")
     except Exception as e:
-        st.error(f"Error fetching index data: {e}")
-
-
+        st.error(f"Error fetching indices: {e}")
 
 def display_top_movers(exchange="NSE"):
     """Displays the top 5 gainers and losers on the specified exchange."""
