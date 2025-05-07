@@ -1,0 +1,20 @@
+[server]
+fileWatcherType = "poll"
+
+[client]
+toolbarMode = "minimal"
+
+[theme]
+#base="light"
+#backgroundColor="#FFFFFF" # White
+#primaryColor="#FF4B4B" # Light red
+#secondaryBackgroundColor="#F0F2F6" # Light grayish blue
+#textColor="#31333F" # Very dark grayish blue.
+
+#base="dark"
+#backgroundColor="#232b2b" # Black
+#primaryColor="#DC143C" # Crimson
+#secondaryBackgroundColor="#483D8B" # Dark moderate blue.
+#textColor="#F8F8FF"
+
+font="times new roman"
