@@ -202,7 +202,7 @@ with st.sidebar:
             unsafe_allow_html=True,
         )
     with col2:
-        st.image("imgs/logo_yahoo_lightpurple.svg", width=100)
+        st.image("imgs/logo_yahoo_lightpurple.png", width=100)
 
 
 # --- MAINPAGE ---
