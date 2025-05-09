@@ -1,0 +1,7 @@
+streamlit
+numpy
+pandas
+plotly
+free_proxy
+yfinance
+streamlit-javascript
